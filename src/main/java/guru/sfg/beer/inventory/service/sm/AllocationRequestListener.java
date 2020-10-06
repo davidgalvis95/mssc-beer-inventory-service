@@ -26,6 +26,7 @@ public class AllocationRequestListener
     @JmsListener( destination = JmsConfig.ALLOCATE_ORDER_QUEUE)
     public void listen( AllocateBeerOrderRequest event){
 
+        //AllocateBeerOrderResult.AllocateBeerOrderResultBuilder builder = AllocateBeerOrderResult.builder();
         UUID beerOrderId = event.getBeerOrderDto().getId();
         BeerOrderDto beerOrder = event.getBeerOrderDto();
 
@@ -41,7 +42,10 @@ public class AllocationRequestListener
         }catch ( Exception e ){
             log.error( "Allocation failed for order: " + beerOrderId );
             allocationErrors = true;
+
         }
+
+        log.debug( "sending the result of the allocation" );
 
         jmsTemplate.convertAndSend( JmsConfig.ALLOCATE_ORDER_RESPONSE_QUEUE, AllocateBeerOrderResult.builder()
                                                                                                     .hasAllocationErrors( allocationErrors )
